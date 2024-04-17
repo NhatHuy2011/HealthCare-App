@@ -32,7 +32,7 @@ public class RegisterActivity extends AppCompatActivity {
                 String username = edUsername.getText().toString();
                 String email = edEmail.getText().toString();
                 String password = edPassword.getText().toString();
-                Database db = new Database(getApplicationContext(), "healthier", null, 1);
+                    Database db = new Database(getApplicationContext(), "healthier", null, 1);
                 if(validateUsername()==true && validateEmail()==true && validatePassword()==true && validateRePassWord()==true) {
                     db.register(username, email, password);
                     Toast.makeText(RegisterActivity.this, "Register Success", Toast.LENGTH_SHORT).show();
