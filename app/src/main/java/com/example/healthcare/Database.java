@@ -54,6 +54,37 @@ public class Database extends SQLiteOpenHelper {
         return result;
     }
 
+    public User getUserFromDatabase() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String[] projection = {
+                "username",
+                "email",
+                "password"
+        };
+        Cursor cursor = db.query("users", projection, null, null, null, null, null);
+        cursor.moveToFirst();
+        String username = cursor.getString(cursor.getColumnIndexOrThrow("username"));
+        String email = cursor.getString(cursor.getColumnIndexOrThrow("email"));
+        String password = cursor.getString(cursor.getColumnIndexOrThrow("password"));
+        cursor.close();
+        return new User(username, email, password);
+    }
+
+    public void updateUser(String username, String newEmail, String newPassword) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("email", newEmail);
+        values.put("password", newPassword);
+        String selection = "username = ?";
+        String[] selectionArgs = { username };
+        int count = db.update(
+                "users",
+                values,
+                selection,
+                selectionArgs);
+        db.close();
+    }
+
     public void addCart(String username, String product, float price, String otype)
     {
         ContentValues cv = new ContentValues();
@@ -113,7 +144,6 @@ public class Database extends SQLiteOpenHelper {
         db.close();
     }
     public void removeCart(String username, String otype){
-        int result = 0;
         String str[] = new String[2];
         str[0] = username;
         str[1] = otype;
@@ -121,6 +151,15 @@ public class Database extends SQLiteOpenHelper {
         db.delete("cart", "username = ? and otype = ?", str);
         db.close();
     }
+
+    public void removeOrder(String fullname, String address, String contact, String date, String time, float price){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String whereClause = "fullname = ? AND address = ? AND contact = ? AND date = ? AND time = ? AND price = ?";
+        String[] whereArgs = {fullname, address, contact, date, time, String.valueOf(price)};
+        db.delete("orders", whereClause, whereArgs);
+        db.close();
+    }
+
 
     public ArrayList getOrderData(String username)
     {

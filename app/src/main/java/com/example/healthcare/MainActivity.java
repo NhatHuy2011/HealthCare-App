@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
         //Welcome Username khi Login Vao Home
         SharedPreferences sharedpreferences = getSharedPreferences("share_prefs", Context.MODE_PRIVATE);
         String username = sharedpreferences.getString("username", "").toString();
-        Toast.makeText(getApplicationContext(), "Welcome "+username,Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(), "Welcome "+username,Toast.LENGTH_SHORT).show();
 
         //Log Out
         CardView exit = findViewById(R.id.cardExit);
@@ -58,6 +58,24 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, OrderDetailsActivity.class));
+            }
+        });
+
+        //Calendar
+        CardView calendar = findViewById(R.id.cardCalendar);
+        calendar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, CalendarActivity.class));
+            }
+        });
+
+        //User Info
+        CardView user_info = findViewById(R.id.cardUserInfo);
+        user_info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, UserInfoActivity.class));
             }
         });
     }

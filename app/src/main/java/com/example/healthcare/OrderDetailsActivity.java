@@ -2,11 +2,14 @@ package com.example.healthcare;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -53,9 +56,8 @@ public class OrderDetailsActivity extends AppCompatActivity {
             order_details[i][2] = strData[2];
             order_details[i][3] = strData[3];
             order_details[i][4] = strData[4];
-            order_details[i][5] = strData[5];
+            order_details[i][5] = String.valueOf(Float.parseFloat(strData[5]));
         }
-
         list = new ArrayList();
         for(int i=0; i<order_details.length; i++)
         {
@@ -73,5 +75,53 @@ public class OrderDetailsActivity extends AppCompatActivity {
                 new String[]{"line1", "line2", "line3", "line4", "line5", "line6"},
                 new int[]{R.id.line_a, R.id.line_b, R.id.line_c, R.id.line_d, R.id.line_e, R.id.line_f});
         listView.setAdapter(sa);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //Xoa dong duoc chon
+                showDeleteConfirmationDialog(position);
+            }
+        });
+    }
+    private void showDeleteConfirmationDialog(final int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure you want to delete this item?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // Xác nhận xóa dòng
+                        deleteOrder(position);
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // Hủy bỏ xóa dòng
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private void deleteOrder(int position) {
+        // Lấy dữ liệu của dòng được chọn
+        HashMap<String, String> selectedOrder = (HashMap<String, String>) list.get(position);
+        String fullname = selectedOrder.get("line1");
+        String address = selectedOrder.get("line2");
+        String contact = selectedOrder.get("line3");
+        String date = selectedOrder.get("line4");
+        String time = selectedOrder.get("line5");
+        float price = Float.parseFloat(selectedOrder.get("line6"));
+
+        // Xóa dòng khỏi SQLite
+        Database db = new Database(getApplicationContext(), "healthier", null, 1);
+        db.removeOrder(fullname, address, contact, date, time, price);
+
+        // Xóa dòng khỏi danh sách
+        list.remove(position);
+
+        // Cập nhật ListView
+        sa.notifyDataSetChanged();
     }
 }
